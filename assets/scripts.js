@@ -1,49 +1,72 @@
-jQuery(document).ready(function ($) {
-    // Verificar se o pré-carregamento está habilitado
+jQuery(document).ready(function($) {
     if (typeof wcPageLoaderSettings !== 'undefined' && wcPageLoaderSettings.enabled) {
-        // Criar a barra de carregamento e adicioná-la ao body
+        // Cria a barra de carregamento e a anexa ao <html>
         const loaderBar = $('<div>', { id: 'wc-loader-bar' });
-        $('body').append(loaderBar);
+        $('html').append(loaderBar);
 
-        // Função de pré-carregamento de páginas
-        $('a').on('click', function (e) {
+        // Função para atualizar a cor da barra com base nas configurações
+        const updateBarColor = () => {
+            const color = (typeof wcPageLoaderSettings !== 'undefined' && wcPageLoaderSettings.barColor)
+                ? wcPageLoaderSettings.barColor
+                : '#007bff'; // Cor padrão
+            loaderBar.css('background-color', color);
+        };
+
+        // Aplica a cor inicial da barra
+        updateBarColor();
+
+        // Evento para links
+        $('a').on('click', function(e) {
             const link = $(this).attr('href');
-
-            // Verificar se o link é válido e está no mesmo domínio
             if (link && link.startsWith(window.location.origin)) {
-                e.preventDefault(); // Prevenir redirecionamento imediato
+                e.preventDefault();
+                loaderBar.css('width', '30%'); // Início do carregamento
 
-                // Iniciar a animação da barra de carregamento
-                loaderBar.css('width', '30%');
-
-                // Pré-carregar a página usando fetch
                 fetch(link)
-                    .then((response) => {
-                        if (response.ok) {
-                            loaderBar.css('width', '70%'); // Atualizar a barra para 70%
-                            return response.text();
-                        } else {
-                            throw new Error('Erro ao carregar a página.');
-                        }
+                    .then(response => {
+                        if (!response.ok) throw new Error('Erro ao carregar a página.');
+                        loaderBar.css('width', '70%'); // Progresso do carregamento
+                        return response.text();
                     })
-                    .then(() => {
-                        loaderBar.css('width', '100%'); // Completar a barra
+                    .then(html => {
+                        loaderBar.css('width', '100%'); // Finalização do carregamento
+
                         setTimeout(() => {
-                            window.location.href = link; // Redirecionar após o carregamento
-                        }, 300); // Pequeno delay para exibir a barra completa
+                            const parser = new DOMParser();
+                            const doc = parser.parseFromString(html, 'text/html');
+
+                            // Atualiza o HEAD (scripts, styles, etc.)
+                            $('head').find('script, link[rel="stylesheet"]').remove();
+                            $('head').append($(doc).find('head').children());
+
+                            // Atualiza o BODY
+                            $('body').html($(doc).find('body').html());
+
+                            // Move o scroll para o topo da página
+                            window.scrollTo(0, 0);
+
+                            // URL sem recarregar
+                            history.pushState({}, '', link);
+
+                            // Reanexa a barra ao <html>, reseta o progresso e reaplica a cor
+                            $('html').append(loaderBar);
+                            loaderBar.css('width', '0'); // Reseta a largura
+                            updateBarColor(); // Garante que a cor configurada seja reaplicada
+                        }, 300);
                     })
-                    .catch((error) => {
+                    .catch(error => {
                         console.error(error);
-                        window.location.href = link; // Redirecionar mesmo em caso de erro
+                        window.location.href = link; // Em caso de erro, carrega normalmente
                     });
+            } else {
+                window.location.href = link; // Links externos ou sem `href`
             }
         });
-    }
-});
 
-// Utilizar a cor salva nas configurações
-jQuery(document).ready(function($) {
-    if (wcPageLoaderSettings.enabled) {
-        $('#wc-loader-bar').css('background-color', wcPageLoaderSettings.barColor);
+        // Atualiza a cor da barra ao voltar para uma página anterior
+        window.addEventListener('popstate', function() {
+            updateBarColor();
+            window.scrollTo(0, 0); // Garante que o scroll volte ao topo ao navegar com o botão "voltar"
+        });
     }
 });
