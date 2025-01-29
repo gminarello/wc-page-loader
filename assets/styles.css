@@ -1,0 +1,11 @@
+/* Estilo da barra de carregamento */
+#wc-loader-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 4px;
+    background-color: #007bff; /* Cor azul semelhante ao GitHub */
+    width: 0;
+    z-index: 9999;
+    transition: width 0.3s ease;
+}
