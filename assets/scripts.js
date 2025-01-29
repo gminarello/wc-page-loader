@@ -40,3 +40,10 @@ jQuery(document).ready(function ($) {
         });
     }
 });
+
+// Utilizar a cor salva nas configurações
+jQuery(document).ready(function($) {
+    if (wcPageLoaderSettings.enabled) {
+        $('#wc-loader-bar').css('background-color', wcPageLoaderSettings.barColor);
+    }
+});

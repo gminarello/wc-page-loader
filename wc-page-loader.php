@@ -39,9 +39,17 @@ function wc_pageloader_enqueue_assets() {
     // Passar a configuração para o JavaScript
     wp_localize_script('wc-pageloader-scripts', 'wcPageLoaderSettings', [
         'enabled' => get_option('wc_pageloader_enabled', false),
+        'barColor' => get_option('wc_pageloader_bar_color', '#007bff'),
     ]);
 }
 add_action('wp_enqueue_scripts', 'wc_pageloader_enqueue_assets');
+
+// Enfileira o color picker
+function wc_pageloader_enqueue_color_picker($hook_suffix) {
+    wp_enqueue_style('wp-color-picker');
+    wp_enqueue_script('wc_pageloader_color_picker', plugins_url('assets/color-picker.js', __FILE__), array('wp-color-picker'), false, true);
+}
+add_action('admin_enqueue_scripts', 'wc_pageloader_enqueue_color_picker');
 
 // Adiciona link de configurações na listagem de plugins
 function wc_pageloader_settings_link($links) {

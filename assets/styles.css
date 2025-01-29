@@ -3,8 +3,8 @@
     position: fixed;
     top: 0;
     left: 0;
-    height: 4px;
-    background-color: #007bff; /* Cor azul semelhante ao GitHub */
+    height: 3px;
+    background-color: #007bff; /* Cor padrão */
     width: 0;
     z-index: 9999;
     transition: width 0.3s ease;

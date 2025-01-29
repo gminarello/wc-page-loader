@@ -17,10 +17,11 @@ function pageloader_add_settings_page() {
 add_action('admin_menu', 'pageloader_add_settings_page');
 
 // Registra configurações no banco de dados
-function register_pageloader_settings() {
+function wc_pageloader_register_settings() {
     register_setting('wc_pageloader_settings', 'wc_pageloader_enabled');
+    register_setting('wc_pageloader_settings', 'wc_pageloader_bar_color');
 }
-add_action('admin_init', 'register_pageloader_settings');
+add_action('admin_init', 'wc_pageloader_register_settings');
 
 // Página de configurações do plugin
 function pageloader_settings_page_html() {
@@ -47,6 +48,16 @@ function pageloader_settings_page_html() {
                         <p class="description">Ative para habilitar o pré-carregamento de páginas.</p>
                     </td>
                 </tr>
+
+                <!-- Configuração da cor da barra de pré-carregamento -->
+                <tr valign="top">
+                    <th scope="row">Cor da barra de progresso:</th>
+                    <td>
+                        <input type="text" name="wc_pageloader_bar_color" value="<?php echo esc_attr(get_option('wc_pageloader_bar_color', '#007bff')); ?>" class="my-color-field" data-default-color="#007bff" />
+                        <p class="description">Selecione a cor da barra de progresso do pré-carregamento.</p>
+                    </td>
+                </tr>
+                
             </table>
             <?php submit_button(); ?>
         </form>
