@@ -15,6 +15,21 @@ jQuery(document).ready(function($) {
         // Aplica a cor inicial da barra
         updateBarColor();
 
+        // Função para reexecutar scripts
+        const reexecuteScripts = (doc) => {
+            const scripts = $(doc).find('script');
+            scripts.each(function() {
+                const script = document.createElement('script');
+                script.type = this.type;
+                if (this.src) {
+                    script.src = this.src;
+                } else {
+                    script.textContent = this.textContent;
+                }
+                document.body.appendChild(script);
+            });
+        };
+
         // Evento para links
         $('a').on('click', function(e) {
             const link = $(this).attr('href');
@@ -41,6 +56,9 @@ jQuery(document).ready(function($) {
 
                             // Atualiza o BODY
                             $('body').html($(doc).find('body').html());
+
+                            // Reexecuta scripts
+                            reexecuteScripts(doc);
 
                             // Move o scroll para o topo da página
                             window.scrollTo(0, 0);
