@@ -14,6 +14,9 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
+// Adiciona funções externas do plugin
+require_once plugin_dir_path(__FILE__) . 'includes/page-config.php';
+
 // Enfileirar estilos e scripts
 function wc_pageloader_enqueue_assets() {
     // Enfileirar estilos personalizados do plugin
@@ -32,5 +35,18 @@ function wc_pageloader_enqueue_assets() {
         filemtime(plugin_dir_path(__FILE__) . 'assets/scripts.js'),
         true // Carregar no footer
     );
+
+    // Passar a configuração para o JavaScript
+    wp_localize_script('wc-pageloader-scripts', 'wcPageLoaderSettings', [
+        'enabled' => get_option('wc_pageloader_enabled', false),
+    ]);
 }
 add_action('wp_enqueue_scripts', 'wc_pageloader_enqueue_assets');
+
+// Adiciona link de configurações na listagem de plugins
+function wc_pageloader_settings_link($links) {
+    $settings_link = '<a href="/wp-admin/options-general.php?page=wc-pageloader">' . __('Configurações') . '</a>';
+    array_unshift($links, $settings_link);
+    return $links;
+}
+add_filter('plugin_action_links_' . plugin_basename(__FILE__), 'wc_pageloader_settings_link');
