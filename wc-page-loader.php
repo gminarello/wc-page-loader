@@ -3,7 +3,7 @@
 Plugin Name: WC Page Loader
 Plugin URI: https://cloubox.com.br/
 Description: Pré-carregamento de páginas no WordPress com barra de progresso no topo.
-Version: 1.0.2
+Version: 1.0.3
 Author: Cloubox
 Author URI: https://cloubox.com.br/
 Text Domain: wc-page-loader
